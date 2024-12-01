@@ -14,18 +14,12 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        //fetch the sorted lists
         val (left, right) = input
             .map { it.trim().split("\\s+".toRegex()) }
             .map { it[0].toInt() to it[1].toInt() }
             .unzip()
         val counts = right.groupingBy { it }.eachCount()
-
-        var similarityScore = 0
-        left.forEach{
-            similarityScore += it * counts.getOrDefault(it, 0)}
-
-        return similarityScore
+        return left.fold(0) { acc, num -> acc + num * counts.getOrDefault(num, 0) }
     }
 
     // Read a large test input from the `src/Day01_test.txt` file:
