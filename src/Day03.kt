@@ -1,6 +1,5 @@
 fun main() {
-    fun part1(input: List<String>): Int {
-        val mulregex = """mul\((\d+),(\d+)\)""".toRegex()
+    fun calculateInstructions(input: List<String>, mulregex: Regex): Int {
         return input
             .map { line ->
                 mulregex.findAll(line)
@@ -13,10 +12,29 @@ fun main() {
             }.flatten().sum()
     }
 
-    val testInput = listOf("xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))")
-    part1(testInput)
-    check(part1(testInput) == 161)
+    fun part1(input: List<String>): Int {
+        val mulregex = """mul\((\d+),(\d+)\)""".toRegex()
+        return calculateInstructions(input, mulregex)
+    }
 
-    val input = readInput("Day03")
-    part1(input).println()
+    fun part2(input: List<String>): Int {
+        val instructions = input.fold(StringBuilder()) { sb, str -> sb.append(str) }.split("don't")
+        val doInstructions = mutableListOf<String>()
+        if(instructions.isNotEmpty()) doInstructions.add(instructions.first())
+        for(i in 1 until instructions.size) {
+            val doInstruction = instructions[i].substringAfter("""do()""", "")
+            doInstructions.add(doInstruction)
+        }
+        val mulregex = """mul\((\d+),(\d+)\)""".toRegex()
+        return calculateInstructions(doInstructions, mulregex)
+    }
+
+    val testInput = listOf("xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))")
+    check(part1(testInput) == 161)
+    val testInput2 = listOf("xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))")
+    check(part2(testInput2) == 48)
+
+//    val input = readInput("Day03")
+//    part1(input).println()
+//    part2(input).println()
 }
